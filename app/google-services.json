@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "347757063819",
+    "firebase_url": "https://ordernow-b26fb.firebaseio.com",
+    "project_id": "ordernow-b26fb",
+    "storage_bucket": "ordernow-b26fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347757063819:android:ca65f6ba09320a39",
+        "android_client_info": {
+          "package_name": "com.example.android.ordernow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "347757063819-renii2u3gaebr5ues3jl6s4j50f8cb65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.ordernow",
+            "certificate_hash": "76a2e4fc9c4d6fbac6f84007e6744644e557e7c7"
+          }
+        },
+        {
+          "client_id": "347757063819-jtokgv76kpnmhv62mf2dpbdkgdh682n4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYs3TcTPxVZSKd7zgC8hOvD3Lla4BvFkw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "347757063819-jtokgv76kpnmhv62mf2dpbdkgdh682n4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    tools:context="com.example.android.ordernow.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_margin="15dp"
+                android:id="@+id/profile_image"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/flower"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#ffffff"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Company Name"
+                android:textSize="30sp"
+                android:textStyle="bold|italic" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/takeOrderBTN"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_back"
+                android:textColor="#ffffff"
+                android:layout_gravity="center"
+                android:text="Take Order"
+                android:padding="10dp"
+                android:layout_marginBottom="20dp"/>
+
+            <Button
+                android:id="@+id/currentOrdersBTN"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_back"
+                android:textColor="#ffffff"
+                android:layout_gravity="center"
+                android:text="Current Orders"
+                android:padding="10dp"
+                android:layout_marginBottom="20dp"/>
+
+            <Button
+                android:id="@+id/menuBTN"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_back"
+                android:textColor="#ffffff"
+                android:layout_gravity="center"
+                android:text="Menu"
+                android:padding="10dp"
+                android:layout_marginBottom="20dp"
+                android:onClick="menuButton"/>
+
+            <Button
+                android:id="@+id/signOutBTN"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/sign_out"
+                android:textColor="#ffffff"
+                android:layout_gravity="center"
+                android:text="Sign Out"
+                android:padding="10dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
