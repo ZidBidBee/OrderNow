@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.android.ordernow.onclasses.User;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,29 +62,19 @@ public class LoginActivity extends AppCompatActivity {
         defaults.put("status_bar_color", R.color.colorPrimaryDark);
         mRemoteConfig.setDefaults(defaults);
 
-        final SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        String abColor = prefs.getString("action_bar_color", String.valueOf(R.color.colorPrimary));
-        String statColor = prefs.getString("status_bar_color", String.valueOf(R.color.colorPrimaryDark));
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        try {
-            ActionBar ab = getSupportActionBar();
-            ab.setBackgroundDrawable(new ColorDrawable(Color.parseColor(abColor)));
+        final SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                Window window = getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(Color.parseColor(statColor));
-            }
-        }catch (IllegalArgumentException ie){
-            ActionBar ab = getSupportActionBar();
-            ab.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ff00ff")));
+        String abColor = sharedPreferences.getString("action_bar_color", "#ffffff");
+        String statColor = sharedPreferences.getString("status_bar_color", "#ffffff");
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                Window window = getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(Color.parseColor("#ff00ff"));
-            }
-        }
+        ActionBar ab = getSupportActionBar();
+        ab.setBackgroundDrawable(new ColorDrawable(Color.parseColor(abColor)));
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.parseColor(statColor));
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -173,6 +164,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     private void setActionColor(){

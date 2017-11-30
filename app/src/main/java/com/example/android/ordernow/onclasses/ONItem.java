@@ -4,7 +4,7 @@ package com.example.android.ordernow.onclasses;
  * Created by Ziyaad B on 2017/10/04.
  */
 
-public class ONItem {
+public class ONItem implements java.io.Serializable{
     public String itemName;
     public double itemPrice;
 

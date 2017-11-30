@@ -1,4 +1,4 @@
-package com.example.android.ordernow;
+package com.example.android.ordernow.onclasses;
 
 /**
  * Created by muaaz on 2017/08/23.

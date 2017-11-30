@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:node="merge">
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".Menu" />
         <activity android:name=".EditMenu" />
         <activity android:name=".TakeOrder" />
@@ -33,7 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ConfirmOrderActivity"></activity>
+        <activity android:name=".CurrentIndivOrder"></activity>
     </application>
 
 </manifest>

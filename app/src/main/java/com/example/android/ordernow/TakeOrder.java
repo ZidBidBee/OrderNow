@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,11 +22,16 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.ordernow.onclasses.ONItem;
+import com.example.android.ordernow.onclasses.Order;
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -39,14 +45,17 @@ public class TakeOrder extends AppCompatActivity {
     Menu m;
 
     static double gT;
+    static int orderNo = 0;
+    String username;
+    double totalPrice;
 
     FirebaseRemoteConfig mRemoteConfig;
     SharedPreferences sharedPreferences;
 
-    static ArrayList<ONItem> orderedItems = new ArrayList<ONItem>();
+    static ArrayList<ONItem> orderList = new ArrayList<ONItem>();
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.take_order_menu, menu);
         m = menu;
@@ -71,6 +80,9 @@ public class TakeOrder extends AppCompatActivity {
         mRemoteConfig.setDefaults(defaults);
 
         final SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        username = prefs.getString("USER_EMAIL", "Error1");
+        setTitle(username);
+
         String abColor = prefs.getString("action_bar_color", String.valueOf(R.color.colorPrimary));
         String statColor = prefs.getString("status_bar_color", String.valueOf(R.color.colorPrimaryDark));
 
@@ -78,16 +90,16 @@ public class TakeOrder extends AppCompatActivity {
             ActionBar ab = getSupportActionBar();
             ab.setBackgroundDrawable(new ColorDrawable(Color.parseColor(abColor)));
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 window.setStatusBarColor(Color.parseColor(statColor));
             }
-        }catch (IllegalArgumentException ie){
+        } catch (IllegalArgumentException ie) {
             ActionBar ab = getSupportActionBar();
             ab.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ff00ff")));
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 window.setStatusBarColor(Color.parseColor("#ff00ff"));
@@ -134,10 +146,10 @@ public class TakeOrder extends AppCompatActivity {
 
                         indivItemAmount.setText(String.valueOf(newAmnt));
 
-                         menuPrice = m.findItem(R.id.to_menu_price);
-                         menuPrice.setTitle("R" + String.valueOf(gT) + "0");
+                        menuPrice = m.findItem(R.id.to_menu_price);
+                        menuPrice.setTitle("R" + String.valueOf(gT) + "0");
 
-                         orderedItems.add(onItem);
+                        orderList.add(onItem);
 
                     }
                 });
@@ -157,7 +169,7 @@ public class TakeOrder extends AppCompatActivity {
                         MenuItem menuPrice = m.findItem(R.id.to_menu_price);
                         menuPrice.setTitle("R" + String.valueOf(gT) + "0");
 
-                        orderedItems.remove(onItem);
+                        orderList.remove(onItem);
 
                     }
                 });
@@ -168,13 +180,19 @@ public class TakeOrder extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem){
+    public void onResume(){
+        super.onResume();
+        gT = 0.00;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
         super.onOptionsItemSelected(menuItem);
 
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
 
             case R.id.send_to_chef:
-                if (orderedItems.size() == 0){
+                if (orderList.size() == 0) {
 
                     final AlertDialog alertDialog = new AlertDialog.Builder(TakeOrder.this).create();
                     alertDialog.setTitle("Oops!");
@@ -187,10 +205,81 @@ public class TakeOrder extends AppCompatActivity {
                                 }
                             });
                     alertDialog.show();
-                }else{
-                    Intent intent = new Intent(TakeOrder.this, ConfirmOrderActivity.class);
+                } else {
+                    final AlertDialog alertDialog = new AlertDialog.Builder(TakeOrder.this).create();
+                    alertDialog.setTitle("Confirm Order");
+                    alertDialog.setMessage("Are you sure you want to place this order?");
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Confirm",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(TakeOrder.this, CurrentOrders.class);
+                                    startActivity(intent);
+
+                                    final FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+                                    final DatabaseReference orderNoRef = mDatabase.getReference("Orders");
+                                    orderNoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                            orderNo = dataSnapshot.getValue(int.class);
+
+                                            Log.i("orderno", "after = datasnapshot:" + String.valueOf(orderNo));
+
+                                            if(orderNo == 0){
+
+                                                Toast.makeText(TakeOrder.this, "Order Failed", Toast.LENGTH_SHORT).show();
+                                                Log.i("orderno", "failed = " + String.valueOf(orderNo));
+
+                                            }else{
+                                                Log.i("orderno", "works" + String.valueOf(orderNo));
+
+                                                DatabaseReference usersOrdersRef = mDatabase.getReference("Users/" + username + "/orders/" + String.valueOf(orderNo));
+
+                                                orderNoRef.setValue(orderNo + 1);
+
+                                                Order thisOrder = new Order(orderNo, orderList, gT);
+                                                usersOrdersRef.setValue(thisOrder);
+
+                                                Toast.makeText(TakeOrder.this, "Succesful order", Toast.LENGTH_SHORT).show();
+
+                                            }
+
+                        /*DatabaseReference usersOrdersRef = mDatabase.getReference("Users/" + username + "/orders/" + orderNo);
+
+                        orderNoRef.setValue(orderNo + 1);
+
+                        int day = mDatePicker.getDayOfMonth();
+                        int month = mDatePicker.getMonth() + 1;
+                        int year = mDatePicker.getYear();
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
+                        Date pickUpDate = new Date(year, month, day);
+
+                        Order thisOrder = new Order(orderList, totalPrice, pickUpDate);
+                        usersOrdersRef.setValue(thisOrder);
+
+                        Toast.makeText(ConfirmOrderActivity.this, "Succesful order", Toast.LENGTH_SHORT).show(); */
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            });
+                    alertDialog.show();
                 }
         }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed(){
+        startActivity(new Intent(TakeOrder.this, MainActivity.class));
+        finish();
+        super.onBackPressed();
     }
 
 }
